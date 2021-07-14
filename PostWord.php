@@ -11,6 +11,10 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST') {
 exit(0);
 }
 
+$token = "dsafdsfsdfw";
+
+//$_SESSION['token'] = 'dsafdsfsdfw';
+
 //Test using $_SESSION
 
 if(!isset($_SESSION['user_role'])) {
@@ -24,6 +28,11 @@ if(!isset($_SESSION['token'])){
 }
 
 if($_SESSION['user_role'] !== 'admin') {
+    http_response_code(401);
+    exit(0);
+}
+
+if($_SESSION['token'] !== $token) {
     http_response_code(401);
     exit(0);
 }
