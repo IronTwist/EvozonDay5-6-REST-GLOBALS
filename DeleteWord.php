@@ -9,6 +9,8 @@ if($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     exit(0);
 }
 
+//Test using $_COOKIE
+
 if(!isset($_COOKIE['user_role'])) {
     setcookie('user_role','anonymous');
 }
@@ -21,8 +23,12 @@ if($_COOKIE['user_role'] !== 'admin') {
 if (isset($_REQUEST['word'])) {
     $wordToDelete = $_REQUEST['word'];
 
-    $dictionar = $translatorDb->getDictionar();
-//        var_dump($dictionar);
+    $dictionary = $translatorDb->getDictionary();
+
     $translatorDb->deleteWord($wordToDelete);
+    http_response_code(200);
 }
+
+echo 'Word not found';
+http_response_code(404);
 

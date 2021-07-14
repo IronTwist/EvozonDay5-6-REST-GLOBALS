@@ -1,12 +1,14 @@
 <?php
 
+if(!isset($_POST['file_input'])){
+    http_response_code(404);
+    exit(0);
+}
 
-var_dump($_FILES);
-var_dump($_POST);
-
-//if(!isset($_POST['']){
-//
-//}
+if(!isset($_POST['text_input'])){
+    http_response_code(404);
+    exit(0);
+}
 
 $file_input = $_FILES["file_input"]["tmp_name"];
 

@@ -5,46 +5,41 @@ require_once 'FileManager/FileRepository.php';
 header('Access-Control-Allow-Methods: POST');
 header("Content-type: application/json; charset=utf-8");
 
+session_start();
+
 if($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo "<form action=\"http://www.myhost.com/PostWord.php\ " method=\"POST\">";
+exit(0);
+}
 
-    echo "<label for=\"addWord\" id=\"addWord\">Add word</label>";
-    echo "<input type=\"text\" id=\"addWord\" name=\"addWord\">";
+//Test using $_SESSION
 
-    echo "<label for=\"explanation\" id=\"explanation\">Explanation</label>";
-    echo "<input type=\"text\" id=\"explanation\" name=\"explanation\">";
+if(!isset($_SESSION['user_role'])) {
+    $_SESSION['user_role'] = 'anonymous';
+    $_SESSION['token'] = null;
+}
 
-    echo "<button type=\"submit\">ADD WORD</button>";
-    echo "</form>";
+if(!isset($_SESSION['token'])){
+    http_response_code(401);
+    exit(0);
+}
 
+if($_SESSION['user_role'] !== 'admin') {
+    http_response_code(401);
     exit(0);
 }
 
 $translatorDb = new FileRepository('translatorDB.csv');
 $translatorDb->readDB();
 
-
 $word = $_POST['addWord'];
 $explanation = $_POST['explanation'];
 
-$arrayWord = [
-    0 => $word,
-    1 => $explanation
-];
 
-$previousWords = $translatorDb->getDictionar();
-$previousWords[] = $arrayWord;
+$previousWords = $translatorDb->getDictionary();
+$previousWords[$word] = $explanation;
 
-$newDictionarWords = $previousWords;
-
-$translatorDb->addWord($newDictionarWords);
+$translatorDb->addWord($previousWords);
 
 http_response_code(200);
 
-echo json_encode($newDictionarWords);
-
-
-
-
-
-
+echo json_encode($previousWords, JSON_THROW_ON_ERROR);
