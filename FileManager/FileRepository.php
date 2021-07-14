@@ -3,7 +3,7 @@
 class FileRepository
 {
    private string $filename;
-   private array $dictionar = [];
+   private array $dictionary = [];
 
     /**
      * Translator constructor.
@@ -18,18 +18,19 @@ class FileRepository
     public function readDB():void
     {
         $file = fopen($this->filename, 'rb');
-        //TODO MAP
+
         while(! feof($file)) {
             $result = fgetcsv($file);
-          $this->dictionar[] = $result;
+          $this->dictionary[$result[0]] = $result[1];
         }
     }
 
     public function findTheWord(string $wordToSearch): ?string
     {
-        foreach($this->dictionar as $explanations){
-            if($explanations[0] === $wordToSearch){
-                return $explanations[1];
+
+        foreach($this->dictionary as $word => $explanations){
+            if($word === $wordToSearch){
+                return $explanations;
             }
         }
 
@@ -37,26 +38,26 @@ class FileRepository
     }
 
     public function deleteWord(string $word){
-        foreach ($this->dictionar as $wordSearch) {
-            if($wordSearch[0] === $word){
-                array_pop($wordSearch[0]);
+        foreach ($this->dictionary as $wordFound => $explanation) {
+            if($wordFound === $word){
+                unset($this->dictionary[$wordFound]);
             }
         }
-//        var_dump($this->dictionar);
+
     }
 
-    public function addWord(array $newDictionarWords): bool
+    public function addWord(array $updatedDictionary): bool
     {
+        $file = fopen('translatorDB2.csv', 'wb+');
+
         file_put_contents($this->filename, "");
 
-        $file = fopen($this->filename, 'wb+');
+        foreach($updatedDictionary as $word => $explanation) {
 
-        foreach($newDictionarWords as $dictionarWord) {
-            $arr = $dictionarWord;
+            $line = "$word" . ','. "$explanation";
 
-            $arr2 = implode(',',$dictionarWord);
-            var_dump($arr2);
-            fputcsv($file, $arr2);
+            fputcsv($file, $line);
+
             return true;
         }
 
@@ -66,9 +67,9 @@ class FileRepository
     /**
      * @return array
      */
-    public function getDictionar(): array
+    public function getDictionary(): array
     {
-        return $this->dictionar;
+        return $this->dictionary;
     }
 
 
